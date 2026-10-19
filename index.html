@@ -1,198 +1,208 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AC List</title>
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico?">
-    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico?" />
+    <link rel="stylesheet" href="style.css" />
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
-    <!-- <script src="https://kit.fontawesome.com/3d26462c5c.js" crossorigin="anonymous"></script> -->
-</head>
-<body>
+  </head>
+  <body>
     <div id="app">
-        <div class="intro">
-            <h1>Animal Crossing List</h1>
-            <select  class="month-input" v-model.number="month">
-                <option value="1">January</option>
-                <option value="2">February</option>
-                <option value="3">March</option>
-                <option value="4">April</option>
-                <option value="5">May</option>
-                <option value="6">June</option>
-                <option value="7">July</option>
-                <option value="8">August</option>
-                <option value="9">September</option>
-                <option value="10">October</option>
-                <option value="11">November</option>
-                <option value="12">December</option>
-            </select>
-            <div class="hourCheck">
-                <input v-model="showThisHour" v-on:click="month = getMonth()" type="checkbox" name="" id="">
-                <p>Show available this hour</p>
-            </div>
+      <header class="intro">
+        <button class="help" v-on:click="showHelp = true" title="How to use">
+          ?
+        </button>
+        <h1>Blathers' Checklist</h1>
+        <p class="subtitle">A tracking app for Animal Crossing: New Horizons</p>
+
+        <div class="controls">
+          <select class="select" v-model.number="month">
+            <option v-for="(name, i) in months" :value="i + 1">
+              {{ name }}
+            </option>
+          </select>
+
+          <label class="toggle">
+            <input
+              v-model="showThisHour"
+              v-on:click="month = getMonth()"
+              type="checkbox"
+            />
+            <span class="switch"></span>
+            Available this hour
+          </label>
         </div>
-        
-        <div class="lists">
-            <ul class="fishes">
-                <h1>Fishes</h1>
-                <li class="entry" v-if="showThisHour && Object.values(fish.availability['month-array-northern']).includes(month) 
-                    && Object.values(fish.availability['time-array']).includes(hour)  && !checked.includes(fish['file-name'])
-                    || !showThisHour && Object.values(fish.availability['month-array-northern']).includes(month) && !checked.includes(fish['file-name'])"
-                    v-bind:key="fish.icon_uri" v-for="fish in fishes">
-                    <div>
-                        <img v-bind:src="'img/fish/' + fish['file-name'] + '.png'" alt="">
-                        <p>{{ titleCase(fish['name']['name-USen']) }}</p>
-                    </div>
-                    <div class="time">
+      </header>
 
-                    </div>
-                    <i v-on:click="addToChecked(fish['file-name'])" class="fas fa-check check">✓</i>
-                    <div class="info">
-                        <p v-if="fish['availability']['time'] != 0">{{ fish['availability']['time'] }}</p>
-                        <p v-else>All Day</p>
-                        <p>Location: {{ fish['availability'].location }}</p>
-                    </div>
-                    <div class="info-additional">
-                        <p>{{ numberWithCommas(fish.price) }} Bells</p>
-                        <p>Size: {{ fish.shadow }}</p>
-                        <!-- <a class="tooltip" href="">
-                            <p>Size: {{ fish.shadow }}</p>
-                            <span><img src="./img/shadowsizes.jpg"></span>
-                        </a> -->
-                    </div>
-                </li>
-            </ul>
+      <div
+        v-if="showHelp"
+        class="modal-backdrop"
+        v-on:click.self="showHelp = false"
+      >
+        <div class="modal" role="dialog" aria-labelledby="help-title">
+          <h2 id="help-title">What is this?</h2>
+          <p>
+            A checklist for Animal Crossing: New Horizons that shows the fish,
+            bugs and sea creatures you can catch right now and still haven't
+            caught yet.
+          </p>
 
-            <ul class="bugs">
-                <h1>Bugs</h1>
-                <li class="entry" v-if="showThisHour && Object.values(bug.availability['month-array-northern']).includes(month) 
-                && Object.values(bug.availability['time-array']).includes(hour)  && !checked.includes(bug['file-name'])
-                || !showThisHour && Object.values(bug.availability['month-array-northern']).includes(month) && !checked.includes(bug['file-name'])"
-                    v-bind:key="bug.icon_uri" v-for="bug in bugs">
-                    <div>
-                        <img v-bind:src="'img/bugs/' + bug['file-name'] + '.png'" alt="">
-                        <p>{{ titleCase(bug['name']['name-USen']) }}</p>
-                    </div>
-                    <div class="time">
+          <h3>How to use it</h3>
+          <ul>
+            <li>
+              Pick a <strong>month</strong> to see what's around. It starts on
+              the current month.
+            </li>
+            <li>
+              Turn on <strong>Available this hour</strong> to only show what you
+              can catch right now.
+            </li>
+            <li>
+              Switch between <strong>Fish</strong>, <strong>Bugs</strong> and
+              <strong>Sea Creatures</strong> with the tabs, and use the
+              dropdowns to sort or filter by location.
+            </li>
+            <li>
+              Hit <strong>✓</strong> on anything you've caught to move it to the
+              <strong>Caught</strong> list at the bottom. Click the ✕ there to
+              undo.
+            </li>
+          </ul>
 
-                    </div>
-                    <i v-on:click="addToChecked(bug['file-name'])" class="fas fa-check check">✓</i>
-                    <div class="info">
-                        <p v-if="bug['availability']['time'] != 0">{{ bug['availability']['time'] }}</p>
-                        <p v-else>All Day</p>
-                        <p>Location: {{ bug['availability'].location }}</p>
-                    </div>
-                    <div class="info-additional">
-                        <p>{{ numberWithCommas(bug.price) }} Bells</p>
-                    </div>
-                </li>
-            </ul>
+          <p class="note">
+            Your caught list is saved in this browser. Times and months are for
+            the Northern Hemisphere.
+          </p>
 
-            <ul class="seacreatures">
-                <h1>Sea Creatures</h1>
-                <li class="entry" v-if="showThisHour && Object.values(seacreature.availability['month-array-northern']).includes(month) 
-                && Object.values(seacreature.availability['time-array']).includes(hour)  && !checked.includes(seacreature['file-name'])
-                || !showThisHour && Object.values(seacreature.availability['month-array-northern']).includes(month) && !checked.includes(seacreature['file-name'])"
-                    v-bind:key="seacreature.icon_uri" v-for="seacreature in seacreatures">
-                    <div>
-                        <img v-bind:src="'img/sea/' + seacreature['file-name'] + '.png'" alt="">
-                        <p>{{ titleCase(seacreature['name']['name-USen']) }}</p>
-                    </div>
-                    <div class="time">
-                    </div>
-                    <i v-on:click="addToChecked(seacreature['file-name'])" class="fas fa-check check">✓</i>
-                    <div class="info">
-                        <p v-if="seacreature['availability']['time'] != 0">{{ seacreature['availability']['time'] }}</p>
-                        <p v-else>All Day</p>
-                        <p>Size: {{ seacreature.shadow }}</p>
-                    </div>
-                    <div class="info-additional">
-                        <p>{{ numberWithCommas(seacreature.price) }} Bells</p>
-                    </div>
-                </li>
-            </ul>
+          <button class="ok" v-on:click="showHelp = false">Okay</button>
+        </div>
+      </div>
+
+      <nav class="tabs">
+        <button
+          v-for="section in sections"
+          :key="section.key"
+          class="tab"
+          :class="{ active: section.key == activeSection }"
+          v-on:click="activeSection = section.key"
+        >
+          {{ section.title }}
+          <span class="count">{{ missing(section.key).length }}</span>
+        </button>
+      </nav>
+
+      <div class="toolbar">
+        <label>
+          Sort by
+          <select class="select" v-model="sortBy">
+            <option value="default">Museum order</option>
+            <option value="name">Name</option>
+            <option value="price">Price</option>
+            <option value="time">Time of day</option>
+          </select>
+        </label>
+
+        <label v-if="locations.length">
+          Location
+          <select class="select" v-model="location">
+            <option value="">All locations</option>
+            <option v-for="place in locations" :value="place">
+              {{ place }}
+            </option>
+          </select>
+        </label>
+      </div>
+
+      <main class="lists">
+        <section class="list">
+          <ul>
+            <li
+              class="entry"
+              v-for="creature in visibleCreatures"
+              :key="creature['file-name']"
+            >
+              <img
+                class="icon"
+                :src="'img/' + currentSection.folder + '/' + creature['file-name'] + '.png'"
+                alt=""
+              />
+
+              <div class="details">
+                <p class="name">{{ titleCase(creature.name['name-USen']) }}</p>
+                <dl class="meta">
+                  <dt>Time</dt>
+                  <dd>{{ creature.availability.time || 'All day' }}</dd>
+
+                  <template v-if="creature.availability.location">
+                    <dt>Location</dt>
+                    <dd>{{ creature.availability.location }}</dd>
+                  </template>
+
+                  <template v-if="creature.shadow">
+                    <dt>Size</dt>
+                    <dd>{{ creature.shadow }}</dd>
+                  </template>
+
+                  <template v-if="creature.speed">
+                    <dt>Speed</dt>
+                    <dd>{{ creature.speed }}</dd>
+                  </template>
+                </dl>
+                <span class="price"
+                  >{{ numberWithCommas(creature.price) }}</span
+                >
+              </div>
+
+              <button
+                class="check"
+                v-on:click="addToChecked(creature['file-name'])"
+                title="Mark as caught"
+              >
+                ✓
+              </button>
+            </li>
+          </ul>
+
+          <p
+            v-if="sectionLoaded(currentSection.key) && !visibleCreatures.length"
+            class="empty"
+          >
+            Nothing left to catch here 🎉
+          </p>
+        </section>
+      </main>
+
+      <section v-if="checked.length > 0" class="caught">
+        <div class="caught-header">
+          <h2>Caught <span class="count">{{ checked.length }}</span></h2>
+          <button class="reset" @click="resetChecked()">Reset all</button>
         </div>
 
-        <div v-if="checked.length > 1" class="c-text">
-            <h1>Checked</h1>
-            <button @click="resetChecked()">Reset All Checked</button>
-        </div>
-        
-        <div class="lists caught-list">
-            <ul class="fishes">
-                <li class="entry" v-if="checked.includes(fish['file-name'])"
-                    v-bind:key="fish.icon_uri" v-for="fish in fishes">
-                    <div>
-                        <img v-bind:src="'img/fish/' + fish['file-name'] + '.png'" alt="">
-                        <p>{{ titleCase(fish['name']['name-USen']) }}</p>
-                    </div>
-                    <div class="time">
-
-                    </div>
-                    <i v-on:click="removeFromChecked(fish['file-name'])" class="fas fa-times check">X</i>
-                    <div class="info">
-                        <p v-if="fish['availability']['time'] != 0">{{ fish['availability']['time'] }}</p>
-                        <p v-else>All Day</p>
-                        <p>Location: {{ fish['availability'].location }}</p>
-                    </div>
-                    <div class="info-additional">
-                        <p>{{ numberWithCommas(fish.price) }} Bells</p>
-                        <p>Size: {{ fish.shadow }}</p>
-                        <!-- <a class="tooltip" href="">
-                            <p>Size: {{ fish.shadow }}</p>
-                            <span><img src="./img/shadowsizes.jpg"></span>
-                        </a> -->
-                    </div>
-                </li>
-            </ul>
-
-            <ul class="bugs">
-                <li class="entry" v-if="checked.includes(bug['file-name'])"
-                    v-bind:key="bug.icon_uri" v-for="bug in bugs">
-                    <div>
-                        <img v-bind:src="'img/bugs/' + bug['file-name'] + '.png'" alt="">
-                        <p>{{ titleCase(bug['name']['name-USen']) }}</p>
-                    </div>
-                    <div class="time">
-
-                    </div>
-                    <i v-on:click="removeFromChecked(bug['file-name'])" class="fas fa-times check">X</i>
-                    <div class="info">
-                        <p v-if="bug['availability']['time'] != 0">{{ bug['availability']['time'] }}</p>
-                        <p v-else>All Day</p>
-                        <p>Location: {{ bug['availability'].location }}</p>
-                    </div>
-                    <div class="info-additional">
-                        <p>{{ numberWithCommas(bug.price) }} Bells</p>
-                    </div>
-                </li>
-            </ul>
-
-            <ul class="seacreatures">
-                <li class="entry" v-if="checked.includes(seacreature['file-name'])"
-                    v-bind:key="seacreature.icon_uri" v-for="seacreature in seacreatures">
-                    <div>
-                        <img v-bind:src="'img/sea/' + seacreature['file-name'] + '.png'" alt="">
-                        <p>{{ titleCase(seacreature['name']['name-USen']) }}</p>
-                    </div>
-                    <div class="time">
-                        
-                    </div>
-                    <i v-on:click="removeFromChecked(seacreature['file-name'])" class="fas fa-times check">X</i>
-                    <div class="info">
-                        <p v-if="seacreature['availability']['time'] != 0">{{ seacreature['availability']['time'] }}</p>
-                        <p v-else>All Day</p>
-                        <p>Size: {{ seacreature.shadow }}</p>
-                    </div>
-                    <div class="info-additional">
-                        <p>{{ numberWithCommas(seacreature.price) }} Bells</p>
-                    </div>
-                </li>
-            </ul>
-        </div>
+        <ul class="caught-list">
+          <template v-for="section in sections">
+            <li
+              class="chip"
+              v-for="creature in caught(section.key)"
+              :key="creature['file-name']"
+            >
+              <img
+                :src="'img/' + section.folder + '/' + creature['file-name'] + '.png'"
+                alt=""
+              />
+              {{ titleCase(creature.name['name-USen']) }}
+              <button
+                v-on:click="removeFromChecked(creature['file-name'])"
+                title="Undo"
+              >
+                ✕
+              </button>
+            </li>
+          </template>
+        </ul>
+      </section>
     </div>
     <script src="./main.js"></script>
-</body>
+  </body>
 </html>
