@@ -7,6 +7,7 @@ var app = new Vue({
     bugs: null,
     seacreatures: null,
     showThisHour: false,
+    southern: false,
     activeSection: 'fishes',
     sortBy: 'default',
     location: '',
@@ -69,6 +70,9 @@ var app = new Vue({
     activeSection: function () {
       this.location = ''
     },
+    southern: function () {
+      localStorage.setItem('southern', this.southern)
+    },
   },
   methods: {
     titleCase: function (str) {
@@ -84,8 +88,10 @@ var app = new Vue({
     },
     isAvailable: function (creature) {
       var availability = creature.availability
-      if (!availability['month-array-northern'].includes(this.month))
-        return false
+      var months = this.southern
+        ? availability['month-array-southern']
+        : availability['month-array-northern']
+      if (!months.includes(this.month)) return false
       if (this.showThisHour && !availability['time-array'].includes(this.hour))
         return false
       return true
@@ -144,6 +150,7 @@ var app = new Vue({
     if (localStorage.getItem('checked')) {
       this.checked = localStorage.getItem('checked').split(',')
     }
+    this.southern = localStorage.getItem('southern') == 'true'
   },
 })
 

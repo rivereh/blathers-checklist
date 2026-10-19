@@ -33,6 +33,12 @@
             <span class="switch"></span>
             Available this hour
           </label>
+
+          <label class="toggle">
+            <input v-model="southern" type="checkbox" />
+            <span class="switch"></span>
+            Southern Hemisphere
+          </label>
         </div>
       </header>
 
@@ -60,6 +66,10 @@
               can catch right now.
             </li>
             <li>
+              Turn on <strong>Southern Hemisphere</strong> if your island is in
+              the south.
+            </li>
+            <li>
               Switch between <strong>Fish</strong>, <strong>Bugs</strong> and
               <strong>Sea Creatures</strong> with the tabs, and use the
               dropdowns to sort or filter by location.
@@ -72,8 +82,7 @@
           </ul>
 
           <p class="note">
-            Your caught list is saved in this browser. Times and months are for
-            the Northern Hemisphere.
+            Your caught list and hemisphere are saved in this browser.
           </p>
 
           <button class="ok" v-on:click="showHelp = false">Okay</button>
